@@ -1,0 +1,14 @@
+body {
+  background-color: #ffefdf;
+  background: url(../img/bg.jpg) no-repeat;
+  text-align: center;
+  margin: 0;
+  overflow: hidden;
+}
+
+
+div {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+}

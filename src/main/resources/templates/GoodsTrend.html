@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="utf-8"/> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="../../css/bootstrap.min.css"/> 
+    <link rel="stylesheet" th:href="@{/css/bootstrap-table.min.css}" href="css/bootstrap-table.min.css"/>
+    <script src="js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+</head>
+<body style="background: url(../img/bg.jpg) no-repeat">
+<div class="container">
+   <h3 style="text-align:center;color:red;">商品评价信息</h3>
+    
+    <table id="table"
+           data-toggle="table"
+           data-show-columns="true"
+           data-search="true"
+           data-show-refresh="true"
+           data-show-toggle="true"
+           data-pagination="true"
+           data-height="500">
+        <thead>
+        <tr>
+            <th data-field="id" data-formatter="idFormatter">GoodID</th>
+            <th data-field="name">商品名</th>
+            <th data-field="comment_num">总评价数</th>
+            <th data-field="good_rate">好评率</th>
+            <th data-field="good_comment_num">好评数</th>
+            <th data-field="mid_comment_num">中评数</th>
+            <th data-field="bad_comment_num">差评数</th>
+            <th data-field="price">价格</th>
+           
+            <th >operation</th>
+        </tr>
+        </thead>
+        <tbody>
+        	<tr th:each="prod : ${prods}">
+        		<td th:text="${prod.good_id}">Onions</td>
+		      
+		       <td> <a th:href="${prod.item_url}"  target="_blank"><div th:text="${prod.name}">2.41</div></a></td>
+		      <td th:text="${prod.comment_num}">yes</td>
+		      <td th:text="${prod.good_rate}">yes</td>
+		      <td th:text="${prod.good_comment_num}">yes</td>
+		      <td th:text="${prod.mid_comment_num}">yes</td>
+		      <td th:text="${prod.bad_comment_num}">yes</td>
+		      <td th:text="${prod.price}">yes</td>
+		     
+		      <td>
+		      	<button class="searchbutton" type="button" value="add" onclick='getMac(this);'>关注
+                     <i class="fa fa-search"></i> 
+                </button>
+                <button class="searchbutton" type="button" value="del" onclick='getCancle(this);'>取关
+                     <i class="fa fa-search"></i> 
+                </button>
+              </td>
+		     </tr>
+        </tbody>
+    </table>
+     <h3>你可能喜欢:</h3>
+    <div th:each="proda : ${prodas}">
+	      <div>
+                <a href="../GoodsTrend.html" th:href="@{/manage/GoodsTrend(goodId=${proda.id})}"><h3 th:text="${proda.name}">2.41</h3></a>
+		      </div>
+	 </div>
+	    	
+</div>
+
+<script src="js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+<!--<script src="assets/bootstrap2.3/js/bootstrap.min.js"></script>-->
+<script src="js/tableExport.js" th:src="@{/js/tableExport.js}"></script>
+<script src="js/jquery.base64.js" th:src="@{/js/jquery.base64.js}"></script>
+<script src="js/bootstrap-table.js" th:src="@{/js/bootstrap-table.js}"></script>
+<script src="js/bootstrap-table-export.js" th:src="@{/js/bootstrap-table-export.js}"></script>
+<script>
+/*<![CDATA[*/
+    $(function () {
+        $('#build').click(build);//.trigger('click');
+        $('#cells, #rows').keyup(function (e) {
+            if (e.keyCode === 13) {
+                build();
+            }
+        });
+    });
+
+    function build() {
+        var cells = $('#cells').val(),
+            rows = $('#rows').val(),
+            i, j, row,
+            columns = [],
+            data = [];
+
+        for (i = 0; i < cells; i++) {
+            columns.push({
+                field: 'field' + i,
+                title: 'Cell' + i
+            });
+        }
+        for (i = 0; i < rows; i++) {
+            row = {};
+            for (j = 0; j < cells; j++) {
+                row['field' + j] = 'Row-' + i + '-' + j;
+            }
+            data.push(row);
+        }
+       
+    }
+    
+
+    function idFormatter(value) {
+        return value;
+    }
+    
+    function login(tel){
+
+		$.get("/ajax/login", {"tel": tel},
+     			  function(data){
+     			    if(data.status=="0"){
+     			   	alert("成功!");
+     			
+     			   }else{
+     			   	alert("失败!");
+
+     			   }
+     			  },"json");
+	}
+    
+    function taste(act, goodid){
+    	
+    	$.get("/ajax/taste", {"act":act, "goodid":goodid},
+   			  function(data){
+
+   			    if(data.status=="0"){
+   			   		alert("成功!");
+   			   }else if(data.status=="1001"){
+   			   		alert("重复关注 关注失败");
+   			   }else if(data.status=="1002"){
+   			   
+   			   		alert("您还未关注 请先关注");
+   			   }else{
+   			   	alert("失败!");
+   			   }
+   			  },"json");
+    	
+    }
+   
+	function getMac(obj){
+		 var trNodes = obj.parentNode.parentNode;
+		 var goodid=trNodes.cells[0].innerText;
+
+		$.get("/ajax/taste", {"act":"add","goodid":goodid},
+     			  function(data){
+     			    if(data.status=="1000"){
+     			   		tel = prompt("请输入号码", "");
+     			   		
+     			   		if(tel != "" && (/^1[34578]\d{9}$/.test(tel))){
+	     			   		 
+     			   			login(tel);
+     			   			alert("手机号录入成功 请关注商品");
+     			   			
+     			   		}else{
+     			   		 	alert("手机号码有误，请重填");
+     			   		}
+     			   		
+     			   }else if(data.status=="1001"){
+      			   		alert("重复关注 关注失败");
+       			   }else if(data.status=="1002"){
+       			   
+       			   		alert("您还未关注 请先关注");
+       			   }else{
+     			   	alert("成功!");
+     			   }
+     			  },"json");
+
+	}
+	
+	function getCancle(obj){
+		
+		 var trNodes = obj.parentNode.parentNode;
+		 var goodid=trNodes.cells[0].innerText;
+		 
+		 taste("del", goodid);
+
+	}
+	
+	
+   
+   
+    /*]]>*/
+</script>
+</body>
+</html>

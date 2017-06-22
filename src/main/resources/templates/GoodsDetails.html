@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="utf-8"/> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="../../css/bootstrap.min.css"/> 
+    <link rel="stylesheet" th:href="@{/css/bootstrap-table.min.css}" href="css/bootstrap-table.min.css"/>
+    <script src="js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+</head>
+<body style="background: url(../img/bg.jpg) no-repeat">
+<div class="container">
+    <h3 style="text-align:center;color:red;">商品详情信息</h3>
+    <table id="table"
+           data-toggle="table"
+           data-show-columns="true"
+           data-search="true"
+           data-show-refresh="true"
+           data-show-toggle="true"
+           data-pagination="true"
+           data-height="500">
+        <thead>
+        <tr>
+            <th data-field="id" data-formatter="idFormatter">ID</th>
+            <th data-field="name">商品名</th>
+            <th data-field="price">价格</th>
+           
+             <th data-field="img_url">商品缩略图</th>
+            <th data-field="item_from">商品来源url</th>
+            <th >operation</th>
+        </tr>
+        </thead>
+        <tbody>
+        	<tr th:each="prod : ${prods}">
+		      <td th:text="${prod.id}">Onions</td>
+		      
+		   	 <td> <a th:href="${prod.item_url}"  target="_blank"><div th:text="${prod.name}">2.41</div></a></td>
+		   	 <td th:text="${prod.price}">yes</td>
+		     <td> <img alt="商品缩略图" th:src="${prod.img_url}"/> </td> 
+		  	
+		      <td ><a th:href="${prod.item_from}"  target="_blank">商品来源Url</a></td>
+		      <td>
+                <a href="../GoodsTrend.html" th:href="@{/manage/GoodsTrend(goodId=${prod.id})}">Enter</a>
+		      </td>
+	    	</tr>
+        </tbody>
+    </table>
+    
+   
+</div>
+
+<script src="js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+<!--<script src="assets/bootstrap2.3/js/bootstrap.min.js"></script>-->
+<script src="js/tableExport.js" th:src="@{/js/tableExport.js}"></script>
+<script src="js/jquery.base64.js" th:src="@{/js/jquery.base64.js}"></script>
+<script src="js/bootstrap-table.js" th:src="@{/js/bootstrap-table.js}"></script>
+<script src="js/bootstrap-table-export.js" th:src="@{/js/bootstrap-table-export.js}"></script>
+<script>
+/*<![CDATA[*/
+    $(function () {
+        $('#build').click(build);//.trigger('click');
+        $('#cells, #rows').keyup(function (e) {
+            if (e.keyCode === 13) {
+                build();
+            }
+        });
+    });
+
+    function build() {
+        var cells = $('#cells').val(),
+            rows = $('#rows').val(),
+            i, j, row,
+            columns = [],
+            data = [];
+
+        for (i = 0; i < cells; i++) {
+            columns.push({
+                field: 'field' + i,
+                title: 'Cell' + i
+            });
+        }
+        for (i = 0; i < rows; i++) {
+            row = {};
+            for (j = 0; j < cells; j++) {
+                row['field' + j] = 'Row-' + i + '-' + j;
+            }
+            data.push(row);
+        }
+       
+    }
+    $('#table').bootstrapTable('destroy').bootstrapTable({
+        columns: columns,
+        data: data
+    });
+
+    function idFormatter(value) {
+        return value;
+    }
+    
+    
+   
+    /*]]>*/
+</script>
+</body>
+</html>

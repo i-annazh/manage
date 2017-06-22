@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+    <meta charset="utf-8"/> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" href="../../css/bootstrap.min.css"/> 
+    <link rel="stylesheet" th:href="@{/css/bootstrap-table.min.css}" href="css/bootstrap-table.min.css"/>
+    <script src="js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+</head>
+<body  style="background: url(../img/bg.jpg) no-repeat">
+<div class="container">
+   <h3 style="text-align:center;color:red;">各大电商类目信息---商品爬取列表页</h3>
+    <table id="table"
+           data-toggle="table"
+           data-show-columns="true"
+           data-search="true"
+           data-show-refresh="true"
+           data-show-toggle="true"
+           data-pagination="true"
+           data-height="500">
+        <thead>
+        <tr>
+            <th data-field="id" data-formatter="idFormatter">ID</th>
+            <th data-field="source">来源</th>
+            <th data-field="category">类目</th>
+           	<th data-field="url">类目URL</th>
+            <th >operation</th>
+        </tr>
+        </thead>
+        <tbody th:if = "${prods} != null">
+        
+        	<tr th:each="prod : ${prods}">
+		      <td th:text="${prod.id}" >1</td>
+		      <td th:text="${prod.source}">2.41</td>
+		     
+		       <td> <a th:href="${prod.url}"  target="_blank"><div th:text="${prod.category}">2.41</div></a></td>
+		       <td th:text="${prod.url}">yes</td>
+		      <td>
+		      	<button class="searchbutton" type="button" onclick='updateData(this);'>Dispatch
+                     <i class="fa fa-search"></i> 
+                </button>
+                <a href="../GoodsDetails.html" th:href="@{/manage/GoodsDetails(Url=${prod.url})}">Enter</a>
+		      </td>
+	    	</tr>
+	
+        </tbody>
+    </table>
+</div>
+
+<script src="js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+<!--<script src="assets/bootstrap2.3/js/bootstrap.min.js"></script>-->
+<script src="js/tableExport.js" th:src="@{/js/tableExport.js}"></script>
+<script src="js/jquery.base64.js" th:src="@{/js/jquery.base64.js}"></script>
+<script src="js/bootstrap-table.js" th:src="@{/js/bootstrap-table.js}"></script>
+<script src="js/bootstrap-table-export.js" th:src="@{/js/bootstrap-table-export.js}"></script>
+<script>
+/*<![CDATA[*/
+    $(function () {
+        $('#build').click(build);//.trigger('click');
+        $('#cells, #rows').keyup(function (e) {
+            if (e.keyCode === 13) {
+                build();
+            }
+        });
+    });
+
+    function build() {
+        var cells = $('#cells').val(),
+            rows = $('#rows').val(),
+            i, j, row,
+            columns = [],
+            data = [];
+
+        for (i = 0; i < cells; i++) {
+            columns.push({
+                field: 'field' + i,
+                title: 'Cell' + i
+            });
+        }
+        for (i = 0; i < rows; i++) {
+            row = {};
+            for (j = 0; j < cells; j++) {
+                row['field' + j] = 'Row-' + i + '-' + j;
+            }
+            data.push(row);
+        }
+       
+    }
+    
+
+    function idFormatter(value) {
+        return value;
+    }
+   
+
+    //这里需要获取参数
+    function updateData(obj){
+    		
+    		 var trNodes = obj.parentNode.parentNode;
+    		 var source=trNodes.cells[1].innerText;
+    		 var url=trNodes.cells[3].innerText;
+    		 var category=trNodes.cells[2].innerText;
+    		// alert(trNodes.cells[1].innerText);
+    		// alert(trNodes.cells[3].innerText);
+    		alert(trNodes.cells[2].innerText);
+    		 $.get("/ajax/sendupdate", {"url":url, "source":source,"category":category},
+       			  function(data){
+       			    if(data.status=="0"){
+       			   	alert("成功!");
+       			   }else{
+       			   	alert("失败!");
+       			   }
+       			  },"json");	
+    }
+   
+    /*]]>*/
+</script>
+</body>
+</html>
